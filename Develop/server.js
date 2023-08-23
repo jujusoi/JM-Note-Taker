@@ -3,6 +3,7 @@ const path = require('path');
 const database = require('./db/db.json');
 const fs = require('fs');
 const util = require('util');
+const uuid = require('./public/assets/js/uuid');
 
 const readFromFile = util.promisify(fs.readFile);
 
@@ -25,12 +26,21 @@ app.get('/api/notes', (req, res) => {
     readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)));
 });
 
+app.delete('/api/notes/:id', (req, res) => {
+    console.info(`Someone has sent a DELETE request!`);
+    console.log(req);
+    const idToDelete = req.query.id;
+    console.log(idToDelete);
+    res.send(`${req.method} request sent!`);
+})
+
 app.post('/api/notes', (req, res) => {
     const { title, text } = req.body;
     if (title && text) {
         const newObj = {
             title: title,
             text: text,
+            id: uuid.makeId(),
         };
         console.log(newObj);
         fs.readFile('./db/db.json', 'utf8', (err, data) => {
