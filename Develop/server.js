@@ -2,6 +2,9 @@ const express = require('express');
 const path = require('path');
 const database = require('./db/db.json');
 const fs = require('fs');
+const util = require('util');
+
+const readFromFile = util.promisify(fs.readFile);
 
 const app = express();
 const port = 4023;
@@ -19,7 +22,7 @@ app.get('/notes', (req, res) => {
 });
 
 app.get('/api/notes', (req, res) => {
-    res.json(database);
+    readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)));
 });
 
 app.post('/api/notes', (req, res) => {
@@ -37,6 +40,11 @@ app.post('/api/notes', (req, res) => {
                 const newData = JSON.parse(data);
                 newData.push(newObj);
                 fs.writeFile('./db/db.json', JSON.stringify(newData), (err) => console.error(err));
+                const response = {
+                    status: `success`,
+                    body: newObj,
+                };
+                res.json(response);
             }
         })
     }
