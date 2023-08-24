@@ -19,7 +19,7 @@ app.get('/notes', (req, res) => {
 app.use('/api', index);
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '/public/html/404.html'));
+    res.sendFile(path.join(__dirname, '/public/html/index.html'));
 })
 
 app.listen(port, () => {
