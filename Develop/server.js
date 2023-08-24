@@ -28,9 +28,24 @@ app.get('/api/notes', (req, res) => {
 
 app.delete('/api/notes/:id', (req, res) => {
     console.info(`Someone has sent a DELETE request!`);
-    console.log(req);
-    const idToDelete = req.query.id;
-    console.log(idToDelete);
+    const idToDelete = req.params.id;
+    if (idToDelete) {
+        fs.readFile('./db/db.json', 'utf8', (err, data) => {
+            if (err) {
+                console.error(err);
+            } else {
+                const newData = JSON.parse(data);
+                let index = -1;
+                newData.forEach(object => {
+                    index++
+                    if (object.id === idToDelete) {
+                        newData.splice(index, 1);
+                        fs.writeFile('./db/db.json', JSON.stringify(newData), (err) => console.error(err));
+                    }
+                });
+            }
+        })
+    }
     res.send(`${req.method} request sent!`);
 })
 
