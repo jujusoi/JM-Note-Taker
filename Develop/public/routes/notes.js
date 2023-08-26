@@ -2,14 +2,15 @@ const notes = require('express').Router();
 const util = require('util');
 const fs = require('fs');
 const readFromFile = util.promisify(fs.readFile);
-const database = require('../../db/db.json');
 const uuid = require('../assets/js/uuid');
 
 notes.get('/', (req, res) => {
+    console.info(`Someone has sent a ${req.method} request!`);
     readFromFile('../Develop/db/db.json').then((data) => res.json(JSON.parse(data))).catch((err) => (console.error(`${err}, could not read from database`)));
 });
 
 notes.get('/:id', (req, res) => {
+    console.info(`Someone has sent an individual ${req.method} request!`);
     const idToUse = req.params.id;
     if (idToUse) {
         readFromFile('../Develop/db/db.json').then((data) => {
@@ -29,13 +30,10 @@ notes.get('/:id', (req, res) => {
 });
 
 notes.delete('/:id', (req, res) => {
-    console.info(`Someone has sent a DELETE request!`);
+    console.info(`Someone has sent a ${req.method} request!`);
     const idToDelete = req.params.id;
     if (idToDelete) {
-        fs.readFile('../Develop/db/db.json', 'utf8', (err, data) => {
-            if (err) {
-                console.error(err);
-            } else {
+        readFromFile('../Develop/db/db.json').then((data) => {
                 const newData = JSON.parse(data);
                 let index = -1;
                 newData.forEach(object => {
@@ -45,13 +43,16 @@ notes.delete('/:id', (req, res) => {
                         fs.writeFile('../Develop/db/db.json', JSON.stringify(newData), (err) => console.error(err));
                     }
                 });
-            }
-        })
-    }
+            }).catch((err) => {
+                console.error(err);
+                res.json(`Could not read from database!`);
+            });
+        }
     res.send(`${req.method} request sent!`);
 })
 
 notes.post('/', (req, res) => {
+    console.info(`Someone has sent a ${req.method} request!`);
     const { title, text } = req.body;
     if (title && text) {
         const newObj = {
@@ -59,20 +60,18 @@ notes.post('/', (req, res) => {
             text: text,
             id: uuid.makeId(),
         };
-        console.log(newObj);
-        fs.readFile('../Develop/db/db.json', 'utf8', (err, data) => {
-            if (err) {
-                console.error(err)
-            } else {
-                const newData = JSON.parse(data);
-                newData.push(newObj);
-                fs.writeFile('../Develop/db/db.json', JSON.stringify(newData), (err) => console.error(err));
-                const response = {
-                    status: `success`,
-                    body: newObj,
-                };
-                res.json(response);
-            }
+        readFromFile('../Develop/db/db.json').then((data) => {
+            const newData = JSON.parse(data);
+            newData.push(newObj);
+            fs.writeFile('../Develop/db/db.json', JSON.stringify(newData), (err) => console.error(err));
+            const response = {
+                status: `success`,
+                body: newObj,
+            };
+            res.json(response);
+        }).catch((err) => {
+            console.error(err);
+            res.json(`Could not read from database`);
         })
     }
 });
