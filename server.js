@@ -9,17 +9,17 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '/public/html/index.html'))
+    res.sendFile(path.join(__dirname, '/Develop/public/html/index.html'))
 });
 
 app.get('/notes', (req, res) => {
-    res.sendFile(path.join(__dirname, '/public/html/notes.html'))
+    res.sendFile(path.join(__dirname, '/Develop/public/html/notes.html'))
 });
 
 app.use('/api', index);
 
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '/public/html/index.html'));
+    res.sendFile(path.join(__dirname, '/Develop/public/html/index.html'));
 })
 
 app.listen(port, () => {
