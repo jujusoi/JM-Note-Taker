@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const index = require('./public/routes/index.js');
 const app = express();
-const port = process.env.PORT || 4023;
+const port = 4023;
 
 app.use(express.static('public'))
 app.use(express.json());
