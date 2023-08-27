@@ -6,14 +6,14 @@ const uuid = require('../assets/js/uuid');
 
 notes.get('/', (req, res) => {
     console.info(`Someone has sent a ${req.method} request!`);
-    readFromFile('./Develop/db/db.json').then((data) => res.json(JSON.parse(data))).catch((err) => (console.error(`${err}, could not read from database`)));
+    readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data))).catch((err) => (console.error(`${err}, could not read from database`)));
 });
 
 notes.get('/:id', (req, res) => {
     console.info(`Someone has sent an individual ${req.method} request!`);
     const idToUse = req.params.id;
     if (idToUse) {
-        readFromFile('./Develop/db/db.json').then((data) => {
+        readFromFile('./db/db.json').then((data) => {
             const parsedData = JSON.parse(data);
             let index = 0;
             parsedData.forEach(object => {
@@ -33,14 +33,14 @@ notes.delete('/:id', (req, res) => {
     console.info(`Someone has sent a ${req.method} request!`);
     const idToDelete = req.params.id;
     if (idToDelete) {
-        readFromFile('./Develop/db/db.json').then((data) => {
+        readFromFile('./db/db.json').then((data) => {
                 const newData = JSON.parse(data);
                 let index = -1;
                 newData.forEach(object => {
                     index++
                     if (object.id === idToDelete) {
                         newData.splice(index, 1);
-                        fs.writeFile('./Develop/db/db.json', JSON.stringify(newData), (err) => console.error(err));
+                        fs.writeFile('./db/db.json', JSON.stringify(newData), (err) => console.error(err));
                     }
                 });
             }).catch((err) => {
@@ -60,10 +60,10 @@ notes.post('/', (req, res) => {
             text: text,
             id: uuid.makeId(),
         };
-        readFromFile('./Develop/db/db.json').then((data) => {
+        readFromFile('./db/db.json').then((data) => {
             const newData = JSON.parse(data);
             newData.push(newObj);
-            fs.writeFile('./Develop/db/db.json', JSON.stringify(newData), (err) => console.error(err));
+            fs.writeFile('./db/db.json', JSON.stringify(newData), (err) => console.error(err));
             const response = {
                 status: `success`,
                 body: newObj,
